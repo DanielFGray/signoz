@@ -61,6 +61,7 @@ services:
         condition: service_completed_successfully
 
   signoz:
+    container_name: signoz
     image: signoz/signoz:${SIGNOZ_TAG:-v0.111.0}
     <<: *restart
     command:
@@ -100,6 +101,7 @@ services:
       - "traefik.http.routers.signoz.tls.certResolver=letsencrypt"
 
   signoz-otel-collector:
+    container_name: signoz-otel-collector
     image: signoz/signoz-otel-collector:${OTELCOL_TAG:-v0.142.0}
     <<: *restart
     command:
