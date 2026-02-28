@@ -123,16 +123,22 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.signoz-otel.loadbalancer.server.port=4318"
-      # OTLP HTTP router for browser traces
-      - "traefik.http.routers.signoz-otel.rule=Host(`otel.postgres.garden`)"
-      - "traefik.http.routers.signoz-otel.entrypoints=websecure"
-      - "traefik.http.routers.signoz-otel.tls.certResolver=letsencrypt"
       # CORS middleware for browser OTEL SDK
       - "traefik.http.middlewares.signoz-otel-cors.headers.accesscontrolallowmethods=GET,POST,OPTIONS"
       - "traefik.http.middlewares.signoz-otel-cors.headers.accesscontrolalloworiginlist=https://postgres.garden,http://localhost:3000"
       - "traefik.http.middlewares.signoz-otel-cors.headers.accesscontrolallowheaders=content-type,x-requested-with"
       - "traefik.http.middlewares.signoz-otel-cors.headers.accesscontrolmaxage=3600"
+      # OTLP HTTP router for otel.postgres.garden
+      - "traefik.http.routers.signoz-otel.rule=Host(`otel.postgres.garden`)"
+      - "traefik.http.routers.signoz-otel.entrypoints=websecure"
+      - "traefik.http.routers.signoz-otel.tls.certResolver=letsencrypt"
       - "traefik.http.routers.signoz-otel.middlewares=signoz-otel-cors"
+      # OTLP HTTP router for signoz.dfg.codes/v1/* (browser traces)
+      - "traefik.http.routers.signoz-otel-dfg.rule=Host(`signoz.dfg.codes`) && PathPrefix(`/v1/`)"
+      - "traefik.http.routers.signoz-otel-dfg.entrypoints=websecure"
+      - "traefik.http.routers.signoz-otel-dfg.tls.certResolver=letsencrypt"
+      - "traefik.http.routers.signoz-otel-dfg.middlewares=signoz-otel-cors"
+      - "traefik.http.routers.signoz-otel-dfg.service=signoz-otel"
 
 volumes:
   signoz-clickhouse:
